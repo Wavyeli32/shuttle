@@ -1,9 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-require('dotenv').config();
+const dotenv = require('dotenv');
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
+
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -19,7 +21,6 @@ mongoose.connection.once('open', () => {
     console.log('Connected to MongoDB database');
 });
 
-// Define a schema for the user model
 const userSchema = new mongoose.Schema({
     username: String,
     password: String,
@@ -27,16 +28,13 @@ const userSchema = new mongoose.Schema({
     hasVoted: { type: Boolean, default: false }
 });
 
-// Create a model based on the schema
 const User = mongoose.model('User', userSchema);
 
-// Define a schema for the vote model
 const voteSchema = new mongoose.Schema({
     candidate: String,
     timestamp: { type: Date, default: Date.now }
 });
 
-// Create a model based on the schema
 const Vote = mongoose.model('Vote', voteSchema);
 
 app.use(bodyParser.json());
