@@ -74,3 +74,24 @@ app.post('/register', async (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
+
+app.post('/login', async (req, res) => {
+    const { username, password } = req.body;
+
+    try {
+        // Find the user in the database by username
+        const user = await User.findOne({ username });
+
+        // If user not found or password does not match, return error
+        if (!user || !(await bcrypt.compare(password, user.password))) {
+            return res.status(401).json({ message: 'Invalid username or password' });
+        }
+
+        // If username and password are correct, login successful
+        console.log('User logged in:', user.username);
+        res.status(200).json({ message: 'Login successful', user });
+    } catch (err) {
+        console.error('Login error:', err);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});

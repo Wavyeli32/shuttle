@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #3498db; 
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px 0;
+            background-color: #333; 
+            color: #ffffff; 
+            width: 100%;
+            position: fixed;
+            top: 0;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px; 
+            margin-top: 60px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+
+        .button-group {
+            display: flex; 
+            flex-direction: row; 
+        }
+
+        button {
+            background-color: #4caf50;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px; 
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Registration</h1>
+    </header>
+
+    <form id="registrationForm" onsubmit="register(event)">
+        <label for="newUsername">New Username:</label>
+        <input type="text" id="newUsername" name="newUsername" required>
+
+        <label for="newPassword">New Password:</label>
+        <input type="password" id="newPassword" name="newPassword" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+
+        <div class="button-group">
+            <button type="submit">Register</button>
+            <button onclick="redirectToLogin()">Back to Login</button>
+        </div>
+    </form>
+    <script>
+        // Define the backend endpoints as global constants
+        const registerEndpoint = '/register';
+        const loginEndpoint = '/login';
+    
+        function register(event) {
+            event.preventDefault();
+    
+            // Retrieve registration data
+            const newUsername = document.getElementById('newUsername').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const email = document.getElementById('email').value;
+    
+            // Create an object with registration data
+            const formData = {
+                username: newUsername,
+                password: newPassword,
+                email: email
+            };
+    
+            // Send registration data to the backend server
+            sendRequest(registerEndpoint, formData);
+        }
+    
+        function login(event) {
+            event.preventDefault();
+    
+            // Retrieve login credentials
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+    
+            // Create an object with login credentials
+            const formData = {
+                username: username,
+                password: password
+            };
+    
+            // Send login credentials to the backend server
+            sendRequest(loginEndpoint, formData);
+        }
+    
+        // Function to send request to the backend server
+        function sendRequest(endpoint, formData) {
+            // Log the URL being used for the request
+            const url = endpoint;
+            console.log(`Sending request to: ${url}`);
+    
+            // Send data to the backend server
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                console.log('Server response:', response);
+                if (response.ok) {
+                    return response.json();
+                }
+                throw new Error('Request failed.');
+            })
+            .then(data => {
+                // Request successful
+                console.log('Response data:', data);
+                alert(data.message);
+                if (data.message === 'Registration successful' && endpoint === registerEndpoint) {
+                    clearRegistrationForm();
+                }
+                if (data.message === 'Login successful' && endpoint === loginEndpoint) {
+                    redirectToHome();
+                }
+            })
+            .catch(error => {
+                // Request failed
+                console.error('Request error:', error);
+                alert('Request failed. Please try again.');
+            });
+        }
+    
+        // Function to clear registration form fields
+        function clearRegistrationForm() {
+            document.getElementById('newUsername').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('email').value = '';
+
+            window.location.href = "index.html";
+        }
+    
+        function redirectToLogin() {
+            window.location.href = "index.html";
+        }
+    </script>
+
+    
+    
