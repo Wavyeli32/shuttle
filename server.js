@@ -1,9 +1,9 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const dotenv = require('dotenv');
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+import express from 'express';
+import bodyParser from 'body-parser';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
 
 dotenv.config();
 
@@ -83,6 +83,45 @@ app.post('/login', async (req, res) => {
     } catch (err) {
         console.error('Login error:', err);
         res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+// Update the /vote endpoint to handle storing votes
+app.post('/vote', async (req, res) => {
+    const { vote } = req.body;
+
+    try {
+        // Create a new vote instance
+        const newVote = new Vote({ candidate: vote });
+
+        // Save the new vote to the database
+        await newVote.save();
+
+        console.log(`Vote recorded for ${vote}`);
+        
+        return res.status(200).json({ message: 'Vote recorded successfully' });
+    } catch (err) {
+        console.error('Error:', err);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+app.post('/get-vote-data', async (req, res) => {
+    try {
+        // Retrieve vote data from MongoDB or any other data source
+        // For this example, let's assume you have a Vote model in MongoDB
+        const votes = await Vote.find();
+
+        // Constructing data to send back to the client
+        const voteData = {
+            votes: votes
+        };
+
+        // Sending the vote data to the client
+        res.status(200).json(voteData);
+    } catch (error) {
+        console.error('Error fetching vote data:', error);
+        res.status(500).json({ message: 'Failed to fetch vote data' });
     }
 });
 

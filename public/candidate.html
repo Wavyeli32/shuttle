@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidate Forum</title>
+   
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #3498db; 
+            color: #333;
+        }
+
+        header {
+            background: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .navbar {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h1 {
+            margin: 0;
+            text-align: center;
+            flex: 1;
+        }
+
+        .navbar a {
+            color: #fff;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+
+        section {
+            max-width: 1000px;
+            margin: 20px auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+
+        .candidate {
+            flex-basis: calc(50% - 40px);
+            background: #f4f4f4;
+            border-radius: 8px;
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .candidate img {
+            max-width: 100%;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+
+        h2 {
+            margin-top: 10px;
+        }
+
+        p {
+            font-size: 1.2em;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation bar section -->
+    <div class="navbar">
+        <a href="evoting.html" class="vote-link">Vote</a> <!-- "Vote" link, leading to the electronic voting page -->
+        <div>
+            <a href="contact.html">Contact Us</a> <!-- Link to the contact page -->
+            <a href="support.html">Support</a> <!-- Link to the support page -->
+        </div>
+    </div>
+
+    <!-- Main content section displaying candidates -->
+    <section>
+        <!-- Candidate 1: Muriel Bowser -->
+        <div class="candidate">
+            <img src="mayor.jpg" alt="Muriel Bowser"> <!-- Candidate image -->
+            <h2>Muriel Bowser</h2> 
+            <p>
+                Muriel Bowser has served as the Mayor of Washington, D.C., since taking office on January 2, 2015. Born on August 2, 1972, in Washington, D.C., she has been a member of the Democratic Party throughout her political career. Before becoming mayor, Bowser served on the D.C. Council, representing Ward 4 from 2007 to 2015. She succeeded Adrian Fenty in the Council position after he became mayor, highlighting her deep-rooted involvement in local politics.
+            </p>
+        </div>
+
+        <!-- Candidate 2: Eric Adams -->
+        <div class="candidate">
+            <img src="mayor2.jpg" alt="Eric Adams"> 
+            <h2>Eric Adams</h2> 
+            <p>Born on September 1, 1960, in Brooklyn, New York, Eric Adams is a former police officer and politician. He served in the New York City Police Department for over 20 years, rising to the rank of captain. Adams later entered politics, serving as a Democratic member of the New York State Senate from 2006 to 2013. During his tenure, he focused on issues related to public safety, education, and healthcare. Adams won the mayoral election in 2021, succeeding Bill de Blasio. As mayor, he has emphasized public safety, education reform, and economic recovery for the city.</p>
+        </div>
+    </section>
+
+</body>
+
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Voting Results</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom, #3498db, #2980b9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin-top: 70px;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #333;
+            padding: 10px;
+            color: #fff;
+            text-decoration: none;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .navbar a {
+            color: #fff;
+            margin: 0 15px;
+            text-decoration: none;
+        }
+
+        h1 {
+            background-color: #333;
+            /* Header background color */
+            color: #ffffff;
+            /* Header text color */
+            width: 100%;
+            margin: 0;
+        }
+
+        #chart-container {
+            width: 50%;
+            margin: auto;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+        <a href="Home.html">Home</a>
+        <div class="contact-bar">
+            <a href="contact.html">Contact Us</a>
+            <a href="support.html">Support</a>
+        </div>
+    </div>
+
+    <h1>E-Voting Results</h1>
+
+    <div id="chart-container">
+        <canvas id="vote-chart"></canvas>
+    </div>
+
+    <div id="countdown">
+        <h2>Voting ends in:</h2>
+        <p id="timer"></p>
+    </div>
+
+<!-- Include Chart.js library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Place this script at the end of your HTML body -->
+<script>
+    // Function to fetch vote data from the server
+    function fetchVoteDataAndUpdateChart() {
+        fetch('/get-vote-data') // Replace '/get-vote-data' with the actual endpoint to fetch vote data
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error('Failed to fetch vote data.');
+        })
+        .then(data => {
+            // Update the pie chart with the fetched vote data
+            updatePieChart(data);
+        })
+        .catch(error => {
+            console.error('Error fetching vote data:', error);
+            // Handle error
+        });
+    }
+
+    // Function to update the pie chart
+    function updatePieChart(voteData) {
+        // Update the chart data
+        voteChart.data.datasets[0].data = voteData.votes;
+        voteChart.data.labels = voteData.candidates;
+
+        // Update the chart
+        voteChart.update();
+    }
+
+    // Initialize the pie chart with empty data
+    const voteChart = new Chart(document.getElementById('vote-chart'), {
+        type: 'pie',
+        data: {
+            datasets: [{
+                data: [],
+                backgroundColor: [], // Add colors if needed
+            }],
+            labels: []
+        },
+        options: {
+            plugins: {
+                datalabels: { // Enable datalabels plugin
+                    display: 'auto', // Display labels based on available space
+                    color: '#fff',
+                    formatter: (value) => { // Format label to display vote count
+                        return value;
+                    }
+                }
+            }
+        }
+    });
+
+    // Fetch vote data and update the chart when the page loads
+    fetchVoteDataAndUpdateChart();
+</script>
+ 
