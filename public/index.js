@@ -50,3 +50,7 @@ function login(event) {
 function redirectToRegistration() {
     window.location.href = "reg.html";
 }
+
+function forgotPassword() {
+    window.location.href = "forgot.html";
+}

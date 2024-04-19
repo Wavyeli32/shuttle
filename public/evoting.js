@@ -1,9 +1,20 @@
 const backendEndpoint = '/vote';
 
-function submitVote(selectedCandidate) {
+// Function to handle form submission
+function handleFormSubmit(event) {
+    event.preventDefault(); // Prevent the default form submission behavior
+
+    const selectedCandidateName = document.getElementById('candidate').value; // Get the selected candidate's name
+
+    // Submit the vote with the selected candidate's name
+    submitVote(selectedCandidateName);
+}
+
+// Function to submit the vote to the backend
+function submitVote(selectedCandidateName) {
     // Create an object with the vote data
     const formData = {
-        vote: selectedCandidate
+        candidateName: selectedCandidateName // Include the candidate's name in the formData object
     };
 
     // Send the vote data to the backend server
@@ -34,3 +45,7 @@ function submitVote(selectedCandidate) {
         alert('Failed to submit vote. Please try again.');
     });
 }
+
+// Add event listener to the form for submission
+const voteForm = document.getElementById('voteForm');
+voteForm.addEventListener('submit', handleFormSubmit);

@@ -71,69 +71,60 @@
         <canvas id="vote-chart"></canvas>
     </div>
 
-    <div id="countdown">
-        <h2>Voting ends in:</h2>
-        <p id="timer"></p>
-    </div>
+    
 
-<!-- Include Chart.js library -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Retrieve submitted votes from localStorage
+        const submittedVotes = localStorage.getItem("votedCandidate");
 
-<!-- Place this script at the end of your HTML body -->
-<script>
-    // Function to fetch vote data from the server
-    function fetchVoteDataAndUpdateChart() {
-        fetch('/get-vote-data') // Replace '/get-vote-data' with the actual endpoint to fetch vote data
-        .then(response => {
-            if (response.ok) {
-                return response.json();
+        // Initialize vote counts
+        let murielVotes = 1;
+        let ericVotes = 0;
+
+        // Update vote counts based on submitted votes
+        if (submittedVotes) {
+            if (submittedVotes === 'Muriel Bowser') {
+                murielVotes++;
+            } else if (submittedVotes === 'Eric Adams') {
+                ericVotes++;
             }
-            throw new Error('Failed to fetch vote data.');
-        })
-        .then(data => {
-            // Update the pie chart with the fetched vote data
-            updatePieChart(data);
-        })
-        .catch(error => {
-            console.error('Error fetching vote data:', error);
-            // Handle error
-        });
-    }
+        }
 
-    // Function to update the pie chart
-    function updatePieChart(voteData) {
-        // Update the chart data
-        voteChart.data.datasets[0].data = voteData.votes;
-        voteChart.data.labels = voteData.candidates;
-
-        // Update the chart
-        voteChart.update();
-    }
-
-    // Initialize the pie chart with empty data
-    const voteChart = new Chart(document.getElementById('vote-chart'), {
-        type: 'pie',
-        data: {
+        const voteData = {
+            labels: ['Muriel Bowser', 'Eric Adams'],
             datasets: [{
-                data: [],
-                backgroundColor: [], // Add colors if needed
-            }],
-            labels: []
-        },
-        options: {
-            plugins: {
-                datalabels: { // Enable datalabels plugin
-                    display: 'auto', // Display labels based on available space
-                    color: '#fff',
-                    formatter: (value) => { // Format label to display vote count
-                        return value;
+                label: 'Votes',
+                data: [murielVotes, ericVotes], // Update vote counts here
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.6)', // Red for Muriel Bowser
+                    'rgba(54, 162, 235, 0.6)', // Blue for Eric Adams
+                ],
+                borderWidth: 1
+            }]
+        };
+
+        const voteChart = new Chart(document.getElementById('vote-chart'), {
+            type: 'pie',
+            data: voteData,
+            options: {
+                plugins: {
+                    datalabels: { // Enable datalabels plugin
+                        display: 'auto', // Display labels based on available space
+                        color: '#fff',
+                        formatter: (value) => { // Format label to display vote count
+                            return value;
+                        }
                     }
                 }
             }
-        }
-    });
+        });
 
-    // Fetch vote data and update the chart when the page loads
-    fetchVoteDataAndUpdateChart();
-</script>
- 
+    </script>
+    
+
+</body>
+
+</html>
+
+
+

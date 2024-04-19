@@ -32,7 +32,7 @@
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             width: 300px;
-            margin-top: 60px; 
+            margin-top: 60px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -72,10 +72,13 @@
     <header>
         <h1>ElectroniVote</h1>
     </header>
-
-    <form id="forgotPasswordForm" onsubmit="forgotPassword(event)">
+    
+    <form id="forgotPasswordForm" action="https://formspree.io/f/xoqgyqwj" method="POST">
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
 
         <div class="button-group">
             <button type="submit">Reset Password</button>
@@ -83,8 +86,46 @@
         </div>
     </form>
 
-    <script src="forgot.js"> </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var form = document.getElementById("forgotPasswordForm");
+            form.addEventListener("submit", function(event) {
+                event.preventDefault(); // Prevent default form submission
+    
+                // Get form data
+                var formData = new FormData(form);
+    
+                // Send form data using Fetch API
+                fetch(form.action, {
+                    method: form.method,
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Handle the response here
+                    console.log(data);
+                    // Show confirmation message
+                    alert("Password reset instructions sent to your email!");
+                    // Clear form fields
+                    form.reset();
+                })
+                .catch(error => {
+                    // Handle errors
+                    console.error('Error:', error);
+                    // Show error message to the user
+                    alert("Oops! Something went wrong. Please try again later.");
+                });
+            });
+        });
+
+        function redirectToLogin() {
+            // Redirect to the login page
+            window.location.href = 'login.html';
+        }
+    </script>
 
 </body>
-
 </html>

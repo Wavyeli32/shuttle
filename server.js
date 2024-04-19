@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
+
 dotenv.config();
 
 const app = express();
@@ -31,9 +32,11 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model('User', userSchema);
 
 const voteSchema = new mongoose.Schema({
-    candidate: String,
+    candidateName: String, // Change 'candidate' to 'candidateName'
+    votes: { type: Number, default: 0 }, // Add 'votes' field to track the number of votes
     timestamp: { type: Date, default: Date.now }
 });
+
 
 const Vote = mongoose.model('Vote', voteSchema);
 
@@ -45,11 +48,19 @@ app.post('/register', async (req, res) => {
     const { username, password, email } = req.body;
 
     try {
-        const existingUser = await User.findOne({ $or: [{ username }, { email }] });
-        if (existingUser) {
-            return res.status(400).json({ message: 'Username or email already exists' });
+        // Check if the username already exists
+        const existingUsername = await User.findOne({ username });
+        if (existingUsername) {
+            return res.status(400).json({ message: 'Username already exists' });
         }
 
+        // Check if the email already exists
+        const existingEmail = await User.findOne({ email });
+        if (existingEmail) {
+            return res.status(400).json({ message: 'Email already exists' });
+        }
+
+        // If neither username nor email exists, proceed with registration
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = new User({
             username,
@@ -86,44 +97,57 @@ app.post('/login', async (req, res) => {
     }
 });
 
-// Update the /vote endpoint to handle storing votes
 app.post('/vote', async (req, res) => {
-    const { vote } = req.body;
+    const selectedCandidateName = req.body.selectedCandidateName; 
 
     try {
-        // Create a new vote instance
-        const newVote = new Vote({ candidate: vote });
+        // Check if the candidate already exists in the database
+        let candidate = await Vote.findOne({ candidateName: selectedCandidateName });
 
-        // Save the new vote to the database
-        await newVote.save();
+        if (!candidate) {
+            // If the candidate does not exist, create a new entry
+            candidate = new Vote({ candidateName: selectedCandidateName });
+        }
 
-        console.log(`Vote recorded for ${vote}`);
+        // Increment the vote count for the selected candidate
+        candidate.votes += 1;
+
+        // Save the updated candidate information to the database
+        await candidate.save();
         
-        return res.status(200).json({ message: 'Vote recorded successfully' });
-    } catch (err) {
-        console.error('Error:', err);
-        res.status(500).json({ message: 'Internal server error' });
+        // Send a success response
+        res.status(200).json({ message: 'Vote recorded successfully!', candidate: selectedCandidateName });
+    } catch (error) {
+        console.error('Error recording vote:', error);
+        // Send an error response
+        res.status(500).json({ message: 'Failed to record vote.' });
     }
 });
 
-app.post('/get-vote-data', async (req, res) => {
+
+app.get('/get-vote-data', async (req, res) => {
     try {
-        // Retrieve vote data from MongoDB or any other data source
-        // For this example, let's assume you have a Vote model in MongoDB
-        const votes = await Vote.find();
+        // Retrieve voting data from the database
+        const voteData = await Vote.aggregate([
+            { $group: { _id: '$candidateName', votes: { $sum: 1 } } } // Updated field name to 'candidateName'
+        ]);
 
-        // Constructing data to send back to the client
-        const voteData = {
-            votes: votes
-        };
+        // Format the voting data as an array of objects with candidate names and votes
+        const formattedVoteData = voteData.map(vote => ({
+            name: vote._id, // Set the 'name' field to the candidate name
+            votes: vote.votes
+        }));
 
-        // Sending the vote data to the client
-        res.status(200).json(voteData);
+        // Send the voting data as JSON response
+        res.status(200).json({ candidates: formattedVoteData });
     } catch (error) {
         console.error('Error fetching vote data:', error);
-        res.status(500).json({ message: 'Failed to fetch vote data' });
+        // Send an error response
+        res.status(500).json({ message: 'Failed to fetch vote data.' });
     }
 });
+
+
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
