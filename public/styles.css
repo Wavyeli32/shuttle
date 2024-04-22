@@ -1,0 +1,90 @@
+/* General body and background styling */
+/* General body and background styling */
+/* General body and background styling */
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-image: url('nsu.jpg'); /* Replace 'your-image.jpg' with your actual image file */
+    background-size: 105%;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    color: #28B463;
+}
+
+
+/* Other styles remain unchanged */
+
+header {
+    background-color: #28B463;
+    color: #fff;
+    padding: 20px 0;
+    text-align: center;
+}
+
+.container {
+    display: flex;
+    height: calc(100vh - 60px); /* Adjust height according to the header and footer */
+    overflow: hidden;
+}
+
+nav {
+    background: rgba(0,0,0,0.5);
+    color: #fff;
+    width: 200px;
+    overflow-y: auto;
+}
+
+nav ul {
+    list-style: none;
+    padding: 20px;
+    margin: 0;
+}
+
+nav ul li a {
+    color: #fff;
+    text-decoration: none;
+    display: block;
+    padding: 10px;
+    font-weight: bold;
+}
+
+nav ul li a:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+
+section {
+    margin-bottom: 20px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+footer {
+    text-align: center;
+    padding: 20px 0;
+    background: #333;
+    color: #fff;
+}
+
+footer p {
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+    nav {
+        width: 100%;
+        height: auto;
+    }
+
+    main {
+        height: auto;
+    }
+}

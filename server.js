@@ -5,7 +5,6 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
-
 dotenv.config();
 
 const app = express();
@@ -14,8 +13,8 @@ const PORT = process.env.PORT || 3000;
 const uri = process.env.MONGODB_URI;
 
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('MongoDB connected successfully'))
-  .catch(err => console.error('MongoDB connection error:', err));
+    .then(() => console.log('MongoDB connected successfully'))
+    .catch(err => console.error('MongoDB connection error:', err));
 
 mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
 mongoose.connection.once('open', () => {
@@ -26,19 +25,17 @@ const userSchema = new mongoose.Schema({
     username: String,
     password: String,
     email: String,
-    hasVoted: { type: Boolean, default: false }
+    role: { type: String, default: 'user' } // Add 'role' field with default value 'user'
 });
 
 const User = mongoose.model('User', userSchema);
 
-const voteSchema = new mongoose.Schema({
-    candidateName: String, // Change 'candidate' to 'candidateName'
-    votes: { type: Number, default: 0 }, // Add 'votes' field to track the number of votes
+const notificationSchema = new mongoose.Schema({
+    message: String,
     timestamp: { type: Date, default: Date.now }
 });
 
-
-const Vote = mongoose.model('Vote', voteSchema);
+const Notification = mongoose.model('Notification', notificationSchema);
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -48,19 +45,16 @@ app.post('/register', async (req, res) => {
     const { username, password, email } = req.body;
 
     try {
-        // Check if the username already exists
         const existingUsername = await User.findOne({ username });
         if (existingUsername) {
             return res.status(400).json({ message: 'Username already exists' });
         }
 
-        // Check if the email already exists
         const existingEmail = await User.findOne({ email });
         if (existingEmail) {
             return res.status(400).json({ message: 'Email already exists' });
         }
 
-        // If neither username nor email exists, proceed with registration
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = new User({
             username,
@@ -90,65 +84,60 @@ app.post('/login', async (req, res) => {
         }
 
         console.log('User logged in:', user.username);
-        res.status(200).json({ message: 'Login successful', user });
+
+        if (user.role === 'admin') {
+            console.log('Admin user logged in');
+            res.json({ message: 'Login successful', redirect: '/admin.html', user });
+        } else {
+            res.json({ message: 'Login successful', redirect: '/nsu.html', user });
+        }
+        
     } catch (err) {
         console.error('Login error:', err);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
 
-app.post('/vote', async (req, res) => {
-    const selectedCandidateName = req.body.selectedCandidateName; 
-
+// Backend route to receive the notification from the frontend
+app.post('/send-notification', async (req, res) => {
     try {
-        // Check if the candidate already exists in the database
-        let candidate = await Vote.findOne({ candidateName: selectedCandidateName });
+        const { message } = req.body;
 
-        if (!candidate) {
-            // If the candidate does not exist, create a new entry
-            candidate = new Vote({ candidateName: selectedCandidateName });
-        }
+        // Save the received notification message to the database
+        const newNotification = new Notification({
+            message: message,
+            timestamp: new Date() // Add a timestamp for the notification
+        });
 
-        // Increment the vote count for the selected candidate
-        candidate.votes += 1;
+        // Save the notification to the database
+        await newNotification.save();
 
-        // Save the updated candidate information to the database
-        await candidate.save();
-        
-        // Send a success response
-        res.status(200).json({ message: 'Vote recorded successfully!', candidate: selectedCandidateName });
-    } catch (error) {
-        console.error('Error recording vote:', error);
-        // Send an error response
-        res.status(500).json({ message: 'Failed to record vote.' });
+        // Send the notification to the student dashboard
+        // You can implement this part based on your specific setup
+        // For example, you can use WebSocket or server-sent events to push notifications to the client
+        // Here, we'll just log the notification
+        console.log('Notification sent:', message);
+
+        // Send a response indicating successful receipt of the notification
+        res.status(200).json({ message: 'Notification sent successfully' });
+    } catch (err) {
+        console.error('Error receiving notification:', err);
+        res.status(500).json({ message: 'Error receiving notification' });
     }
 });
 
 
-app.get('/get-vote-data', async (req, res) => {
+app.get('/notifications', async (req, res) => {
     try {
-        // Retrieve voting data from the database
-        const voteData = await Vote.aggregate([
-            { $group: { _id: '$candidateName', votes: { $sum: 1 } } } // Updated field name to 'candidateName'
-        ]);
+        const notifications = await Notification.find({}).lean();
 
-        // Format the voting data as an array of objects with candidate names and votes
-        const formattedVoteData = voteData.map(vote => ({
-            name: vote._id, // Set the 'name' field to the candidate name
-            votes: vote.votes
-        }));
-
-        // Send the voting data as JSON response
-        res.status(200).json({ candidates: formattedVoteData });
-    } catch (error) {
-        console.error('Error fetching vote data:', error);
-        // Send an error response
-        res.status(500).json({ message: 'Failed to fetch vote data.' });
+        res.json(notifications);
+    } catch (err) {
+        console.error('Error fetching notifications:', err);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
-
-
 
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
 });

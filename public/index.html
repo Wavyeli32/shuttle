@@ -8,22 +8,43 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #3498db;
             margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            background-image: url('tower.jpg'); /* Replace 'your-image.jpg' with your actual image file */
+    background-size: 110%;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
         }
 
         header {
             text-align: center;
-            padding: 20px 0;
-            background-color: #333;
-            color: #ffffff;
+            padding: 100px 0;
+            background-color: black; /* Change background color to white */
+            color: white; /* Change text color to dark */
             width: 100%;
             position: fixed;
             top: 0;
+            display: flex;
+            flex-direction: row; /* Change to row to align items horizontally */
+            justify-content: space-between; /* Align items to the sides */
+            align-items: center;
+            padding: 0 100px; /* Add padding to the sides */
+        }
+
+        #logo {
+            width: 100px; /* Set width of the logo */
+        }
+
+        h1 {
+            margin: 0; /* Remove default margin */
+        }
+
+        .centered-text {
+            flex-grow: 1; /* Allow text to grow and occupy available space */
+            text-align: center; /* Align text to the center */
         }
 
         form {
@@ -32,7 +53,7 @@
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             width: 300px;
-            margin-top: 60px; 
+            margin-top: 120px; /* Increase margin to center the form vertically */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -56,8 +77,8 @@
         }
 
         button {
-            background-color: #4caf50;
-            color: white;
+            background-color: #28B463;
+            color: black;
             padding: 10px;
             border: none;
             border-radius: 5px;
@@ -70,7 +91,8 @@
 <body>
 
     <header>
-        <h1>ElectroniVote</h1>
+        <img id="logo" src="nor.jpg" alt="Logo"> <!-- Adjust the src attribute with your image path -->
+        <h1 class="centered-text"> SHUTTLE SEVRICE</h1>
     </header>
 
     <form id="loginForm" onsubmit="login(event)">
@@ -83,14 +105,71 @@
         <div class="button-group">
             <button type="submit">Login</button>
             <button onclick="redirectToRegistration()">Register</button>
-
-            
             <button onclick="forgotPassword()">Forgot Password</button>
-
         </div>
     </form>
 
-    <script src="index.js"></script>
+    <script>
+        const backendEndpoint = '/login'; // Correct endpoint for login
+
+function login(event) {
+    event.preventDefault();
+
+    // Retrieve entered username and password
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+
+    // Create an object with login credentials
+    const credentials = {
+        username: username,
+        password: password
+    };
+
+    const url = backendEndpoint;
+
+    // Send login credentials to the backend server
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(credentials)
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        }
+        throw new Error('Login failed. Please check your username and password.');
+    })
+    .then(data => {
+        // Check if user data is received from the server
+        if (data && data.redirect) {
+            // Redirect to the specified URL
+            window.location.href = data.redirect;
+        } else {
+            // Handle other responses
+        }
+    })
+    .catch(error => {
+        // Login failed
+        console.error('Login error:', error);
+        alert('Invalid credentials. Please try again.');
+    });
+}
+
+function redirectToRegistration() {
+    window.location.href = "reg.html";
+}
+
+function forgotPassword() {
+    window.location.href = "forgot.html";
+}
+
+// Attach the login function to the form's submit event
+document.getElementById('loginForm').addEventListener('submit', login);
+
+
+    </script>
 
 </body>
 

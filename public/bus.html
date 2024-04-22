@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bus Schedule</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #28B463; /* Green background */
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        td:first-child {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bus Schedule</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Bus Location</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody id="schedule">
+                <!-- Bus schedule rows will be inserted here dynamically -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var manualSchedule = [
+            { location: 'A', time: '08:00 AM' },
+                { location: 'B', time: '08:10 AM' },
+                { location: 'C', time: '08:20 AM' },
+                { location: 'D', time: '08:30 AM' },
+                { location: 'E', time: '08:40 AM' },
+                { location: 'A', time: '08:50 AM' },
+                { location: 'B', time: '09:00 AM' },
+                { location: 'C', time: '09:10 AM' },
+                { location: 'D', time: '09:20 AM' },
+                { location: 'E', time: '09:30 AM' },
+                { location: 'A', time: '09:40 AM' },
+                { location: 'B', time: '09:50 AM' },
+                { location: 'C', time: '10:00 AM' },
+                { location: 'D', time: '10:10 AM' },
+                { location: 'E', time: '10:20 AM' },
+                { location: 'A', time: '10:30 AM' },
+                { location: 'B', time: '10:40 AM' },
+                { location: 'C', time: '10:50 AM' },
+                { location: 'D', time: '11:00 AM' },
+                { location: 'E', time: '11:10 AM' },
+                { location: 'A', time: '11:20 AM' },
+                { location: 'B', time: '11:30 AM' },
+                { location: 'C', time: '11:40 AM' },
+                { location: 'D', time: '11:50 AM' },
+                { location: 'E', time: '12:00 PM' },
+                { location: 'A', time: '12:10 PM' },
+                { location: 'B', time: '12:20 PM' },
+                { location: 'C', time: '12:30 PM' },
+                { location: 'D', time: '12:40 PM' },
+                { location: 'E', time: '12:50 PM' },
+                { location: 'A', time: '01:00 PM' },
+                { location: 'B', time: '01:10 PM' },
+                { location: 'C', time: '01:20 PM' },
+                { location: 'D', time: '01:30 PM' },
+                { location: 'E', time: '01:40 PM' },
+                { location: 'A', time: '01:50 PM' },
+                { location: 'B', time: '02:00 PM' },
+                { location: 'C', time: '02:10 PM' },
+                { location: 'D', time: '02:20 PM' },
+                { location: 'E', time: '02:30 PM' },
+                { location: 'A', time: '02:40 PM' },
+                { location: 'B', time: '02:50 PM' },
+                { location: 'C', time: '03:00 PM' },
+                { location: 'D', time: '03:10 PM' },
+                { location: 'E', time: '03:20 PM' },
+                { location: 'A', time: '03:30 PM' },
+                { location: 'B', time: '03:40 PM' },
+                { location: 'C', time: '03:50 PM' },
+                { location: 'D', time: '04:00 PM' },
+                { location: 'E', time: '04:10 PM' },
+                { location: 'A', time: '04:20 PM' },
+                { location: 'B', time: '04:30 PM' },
+                { location: 'C', time: '04:40 PM' },
+                { location: 'D', time: '04:50 PM' },
+                { location: 'E', time: '05:00 PM' },
+                { location: 'A', time: '05:10 PM' },
+                { location: 'B', time: '05:20 PM' },
+                { location: 'C', time: '05:30 PM' },
+                { location: 'D', time: '05:40 PM' },
+                { location: 'E', time: '05:50 PM' },
+                { location: 'A', time: '06:00 PM' },
+                { location: 'B', time: '06:10 PM' },
+                { location: 'C', time: '06:20 PM' },
+                { location: 'D', time: '06:30 PM' },
+                { location: 'E', time: '06:40 PM' },
+                { location: 'A', time: '06:50 PM' },
+                { location: 'B', time: '07:00 PM' },
+                { location: 'C', time: '07:10 PM' },
+                { location: 'D', time: '07:20 PM' },
+                { location: 'E', time: '07:30 PM' },
+                { location: 'A', time: '07:40 PM' },
+                { location: 'B', time: '07:50 PM' },
+                { location: 'C', time: '08:00 PM' },
+                { location: 'D', time: '08:10 PM' },
+                { location: 'E', time: '08:20 PM' },
+                { location: 'A', time: '08:30 PM' },
+                { location: 'B', time: '08:40 PM' },
+                { location: 'C', time: '08:50 PM' },
+                { location: 'D', time: '09:00 PM' },
+                { location: 'E', time: '09:10 PM' },
+                { location: 'A', time: '09:20 PM' },
+                { location: 'B', time: '09:30 PM' },
+                { location: 'C', time: '09:40 PM' },
+                { location: 'D', time: '09:50 PM' },
+                { location: 'E', time: '10:00 PM' }
+                // Add more entries as needed
+            ];
+
+            displaySchedule(manualSchedule);
+
+            // Function to display the bus schedule
+            function displaySchedule(schedule) {
+                var tbody = document.getElementById('schedule');
+                tbody.innerHTML = ''; // Clear existing content
+                schedule.forEach(function(entry) {
+                    var row = '<tr><td>' + entry.location + '</td><td>' + entry.time + '</td></tr>';
+                    tbody.insertAdjacentHTML('beforeend', row);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+
+
